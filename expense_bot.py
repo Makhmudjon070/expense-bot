@@ -66,10 +66,20 @@ async def report(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 
+async def reset(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    cursor.execute("DELETE FROM expenses")
+    cursor.execute("DELETE FROM sqlite_sequence WHERE name='expenses'")
+    conn.commit()
+    await update.message.reply_text(
+        "🗑️ Barcha xarajatlar o'chirildi. Bazani 0 dan boshladik."
+    )
+
+
 def main():
     app = Application.builder().token(TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("report", report))
+    app.add_handler(CommandHandler("reset", reset))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, add_expense))
     logger.info("Bot ishga tushdi")
     app.run_polling()
